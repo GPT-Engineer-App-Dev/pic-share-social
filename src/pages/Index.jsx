@@ -1,7 +1,29 @@
-import { Box, Container, Flex, Heading, VStack, Image, Text, Button, HStack, Spacer } from "@chakra-ui/react";
+import { Box, Container, Flex, Heading, VStack, Image, Text, Button, HStack, Spacer, Input } from "@chakra-ui/react";
+import { useState } from "react";
 import { FaHome, FaUser, FaUpload } from "react-icons/fa";
 
 const Index = () => {
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [photos, setPhotos] = useState([]);
+
+  const handlePhotoChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedPhoto(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUploadPhoto = () => {
+    if (selectedPhoto) {
+      setPhotos([...photos, selectedPhoto]);
+      setSelectedPhoto(null);
+    }
+  };
+
   return (
     <Container maxW="container.xl" p={0}>
       {/* Navigation Bar */}
@@ -22,21 +44,20 @@ const Index = () => {
           <VStack spacing={4}>
             <Image borderRadius="full" boxSize="150px" src="https://via.placeholder.com/150" alt="Profile Picture" />
             <Heading size="md">User Name</Heading>
-            <Button colorScheme="blue" leftIcon={<FaUpload />}>Upload Photo</Button>
+            <Input type="file" accept="image/*" onChange={handlePhotoChange} />
+            <Button colorScheme="blue" leftIcon={<FaUpload />} onClick={handleUploadPhoto}>Upload Photo</Button>
           </VStack>
         </Box>
 
         {/* Main Feed */}
         <Box w={{ base: "100%", md: "75%" }} p={4}>
           <VStack spacing={4}>
-            <Box w="100%" bg="white" boxShadow="md" borderRadius="md" p={4}>
-              <Image src="https://via.placeholder.com/600x400" alt="Shared Photo" />
-              <Text mt={2}>Caption for the photo</Text>
-            </Box>
-            <Box w="100%" bg="white" boxShadow="md" borderRadius="md" p={4}>
-              <Image src="https://via.placeholder.com/600x400" alt="Shared Photo" />
-              <Text mt={2}>Caption for the photo</Text>
-            </Box>
+            {photos.map((photo, index) => (
+              <Box key={index} w="100%" bg="white" boxShadow="md" borderRadius="md" p={4}>
+                <Image src={photo} alt={`Uploaded Photo ${index + 1}`} />
+                <Text mt={2}>Caption for the photo</Text>
+              </Box>
+            ))}
           </VStack>
         </Box>
       </Flex>
