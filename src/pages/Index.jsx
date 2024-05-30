@@ -1,6 +1,6 @@
 import { Box, Container, Flex, Heading, VStack, Image, Text, Button, HStack, Spacer, Input } from "@chakra-ui/react";
 import { useState } from "react";
-import { FaHome, FaUser, FaUpload } from "react-icons/fa";
+import { FaHome, FaUser, FaUpload, FaThumbsUp } from "react-icons/fa";
 
 const Index = () => {
   const [selectedPhoto, setSelectedPhoto] = useState(null);
@@ -19,9 +19,15 @@ const Index = () => {
 
   const handleUploadPhoto = () => {
     if (selectedPhoto) {
-      setPhotos([...photos, selectedPhoto]);
+      setPhotos([...photos, { src: selectedPhoto, likes: 0 }]);
       setSelectedPhoto(null);
     }
+  };
+
+  const handleLikePhoto = (index) => {
+    const newPhotos = [...photos];
+    newPhotos[index].likes += 1;
+    setPhotos(newPhotos);
   };
 
   return (
@@ -54,8 +60,16 @@ const Index = () => {
           <VStack spacing={4}>
             {photos.map((photo, index) => (
               <Box key={index} w="100%" bg="white" boxShadow="md" borderRadius="md" p={4}>
-                <Image src={photo} alt={`Uploaded Photo ${index + 1}`} />
+                <Image src={photo.src} alt={`Uploaded Photo ${index + 1}`} />
                 <Text mt={2}>Caption for the photo</Text>
+                <Button
+                  leftIcon={<FaThumbsUp />}
+                  colorScheme="blue"
+                  variant="outline"
+                  onClick={() => handleLikePhoto(index)}
+                >
+                  Like {photo.likes}
+                </Button>
               </Box>
             ))}
           </VStack>
